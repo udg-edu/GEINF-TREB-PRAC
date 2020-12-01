@@ -1,0 +1,29 @@
+---
+title: "Treball pràctic d'estadística"
+author: "u0000000"
+date: "_Data creació de l'informe: `r format(Sys.Date(), '%d/%m')`_"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Processament de dades
+
+> Espai per al processament de dades.
+
+# Anàlisi descriptiva de variables
+
+> Espai per a l'anàlisi descriptiu: Cal descriure una variable numèrica, una variable categòrica i les relacions numèrica-numèrica, numèrica-categòrica i categòrica-categòrica.
+
+# Inferència estadística
+
+> Espai per a l'anàlisi inferencial: Utilitza els contrastos vistos a classes per treure conclusions o assumpcions que es poden fer amb les tres relacions de l'apartat anterior.
+
+# Modelització lineal
+
+> Espai per la modelització lineal: Crea un model que expliqui el creixement observat a partir de les variables que creguis adients. Utilitza aquest model per fer una predicció a data d'avui d'algun dels paisos del conjunt de dades.
+
+
+
