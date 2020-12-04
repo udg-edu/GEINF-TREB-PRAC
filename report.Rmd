@@ -1,29 +1,131 @@
 ---
 title: "Treball pràctic d'estadística"
 author: "u0000000"
-date: "_Data creació de l'informe: `r format(Sys.Date(), '%d/%m')`_"
-output: html_document
+date: '_Data creació de l''informe: `r format(Sys.Date(), "%d/%m")`_'
+output:
+  html_document: 
+    highlight: textmate
 ---
 
 ```{r setup, include=FALSE}
+library(tidyverse)
+library(lubridate)
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Processament de dades
+Primerament descarregarem les dades de les dues web anteriors:
 
-> Espai per al processament de dades.
+```{r, eval=FALSE}
+oxcgrt_commit = "dd81c18f5576d78aa0e5543f0d91ccd5c9849ba0"
+oxcgrt_file = "OxCGRT_latest.csv"
+oxcgrt_url = "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/%s/data/%s"
 
-# Anàlisi descriptiva de variables
+owid_commit = "0282b4583d2a981392f152c60690fa2142f92459"
+owid_file = "owid-covid-data.csv"
+owid_url = "https://raw.githubusercontent.com/owid/covid-19-data/%s/public/data/%s"
 
-> Espai per a l'anàlisi descriptiu: Cal descriure una variable numèrica, una variable categòrica i les relacions numèrica-numèrica, numèrica-categòrica i categòrica-categòrica.
+download.file(sprintf(oxcgrt_url, oxcgrt_commit, oxcgrt_file), oxcgrt_file)
+download.file(sprintf(owid_url, owid_commit, owid_file), owid_file)
+```
 
-# Inferència estadística
+Un cop descarregades les dades les obrirem amb el paquet `readr`:
 
-> Espai per a l'anàlisi inferencial: Utilitza els contrastos vistos a classes per treure conclusions o assumpcions que es poden fer amb les tres relacions de l'apartat anterior.
+```{r, message=FALSE}
+dowid = read_csv("owid-covid-data.csv", guess_max = 50000)
+doxcgrt = read_csv("OxCGRT_latest.csv", guess_max = 50000)
+```
 
-# Modelització lineal
+En aquest punt, seleccionarem una data per treballar. Per tal de que cada alumne (o grup) treballi amb dates diferents, la farem dependre d'un codi d'estudiant (si sou un grup de dos, podeu posar el que preferiu):
 
-> Espai per la modelització lineal: Crea un model que expliqui el creixement observat a partir de les variables que creguis adients. Utilitza aquest model per fer una predicció a data d'avui d'algun dels paisos del conjunt de dades.
+```{r, results='asis'}
+set.seed(CODI_UDG <- 0000000); DAY = sample(seq(ymd("20200401"), ymd("20201101"), 1), 1)
+cat(sprintf("S'està treballant a data %s.", format(DAY, "%d/%m")))
+```
 
+1. **Comenta en detall cada un dels següents *chunks* utilitzats pel processament de dades:**
 
+```{r}
+Y_b07 = filter(dowid, DAY - days(7) < date, date <= DAY)
+```
 
+*(Espai per comentar)*
+
+```{r}
+Y_b07 = group_by(Y_b07, iso_code, country = location)
+Y_b07 = summarise(Y_b07, .groups = 'drop', cases_b7 = mean(new_cases, na.rm = TRUE))
+```
+
+*(Espai per comentar)*
+
+```{r}
+Y_b07 = filter(Y_b07, cases_b7 > 0)
+```
+
+*(Espai per comentar)*
+
+```{r}
+Y_f07 = dowid %>%
+  filter(DAY < date, date <= DAY + days(7)) %>%
+  group_by(iso_code) %>%
+  summarise(.groups = 'drop', cases_f7 = mean(new_cases, na.rm = TRUE)) %>%
+  filter(cases_f7 > 0)
+```
+
+*(Espai per comentar)*
+
+```{r}
+Y = inner_join(Y_b07, Y_f07, by = "iso_code") %>%
+  mutate(y = log(cases_f7/cases_b7))
+```
+
+*(Espai per comentar)*
+
+```{r}
+temp = filter(doxcgrt, is.na(RegionName), ymd(Date) == DAY)
+```
+
+*(Espai per comentar)*
+
+```{r}
+X = select(temp, iso_code = CountryCode, ends_with("Index"), matches('^(C|E)._'), -ends_with('_Flag')) %>%
+  rename_with(~str_sub(., 1, 2), matches('^(C|E)._'))
+```
+
+*(Espai per comentar)*
+
+```{r}
+data = inner_join(Y, X, by = 'iso_code')
+```
+
+*(Espai per comentar)*
+
+## Processament del conjunt de dades a analitzar
+
+Estem interessat en analitzar quina relació hi ha entre les decisions de govern (polítiques de tancament i contenció, i econòmiques), i com aquestes es relacionen amb la variació de casos a la població (`y`).
+
+2. **Prepara el conjunt de dades `data` per a ser analitzat segons les característiques de les variables. Explica les decisions que prens i quina és la tipologia de les variables que tens.**
+
+*(Espai per desenvolupar)*
+
+3. **Escull les variables que consideris dins el teu conjunt de dades per tal de descriure de manera completa una variable numèrica, una variable categòrica i les relacions numèrica-numèrica, numèrica-categòrica i categòrica-categòrica.**
+
+*(Espai per desenvolupar)*
+
+4. **Utilitza els contrastos vistos a classes per treure conclusions o assumpcions que es poden fer amb les tres relacions de l'apartat anterior (numèrica-numèrica, numèrica-categòrica i categòrica-categòrica).**
+
+*(Espai per desenvolupar)*
+
+5. **Crea un model que expliqui el creixement observat a partir de les variables que creguis adients.**
+
+*(Espai per desenvolupar)*
+
+6. **Utilitza aquest model per fer una predicció de la variació esperada a data d'avui:**
+
+```{r}
+data_pred = filter(doxcgrt, is.na(RegionName), ymd(Date) == ymd("20201115")) %>%
+  select(iso_code = CountryCode, ends_with("Index"), matches('^(C|E)._'), -ends_with('_Flag')) %>%
+  semi_join(data, by = 'iso_code') %>%
+  rename_with(~str_sub(., 1, 2), matches('^(C|E)._'))
+```
+
+*(Espai per desenvolupar)*
