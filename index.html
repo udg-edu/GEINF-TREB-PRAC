@@ -9,7 +9,6 @@
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
 
-<meta name="author" content="u0000000" />
 
 
 <title>Treball pràctic d’estadística</title>
@@ -383,13 +382,11 @@ summary {
 
 
 <h1 class="title toc-ignore">Treball pràctic d’estadística</h1>
-<h4 class="author">u0000000</h4>
-<h4 class="date"><em>Data creació de l’informe: 04/12</em></h4>
 
 </div>
 
 
-<p>Primerament descarregarem les dades de les dues web anteriors:</p>
+<p>Primerament descarrega les dades de les dues webs anteriors:</p>
 <pre class="r"><code>oxcgrt_commit = &quot;dd81c18f5576d78aa0e5543f0d91ccd5c9849ba0&quot;
 oxcgrt_file = &quot;OxCGRT_latest.csv&quot;
 oxcgrt_url = &quot;https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/%s/data/%s&quot;
@@ -400,13 +397,15 @@ owid_url = &quot;https://raw.githubusercontent.com/owid/covid-19-data/%s/public/
 
 download.file(sprintf(oxcgrt_url, oxcgrt_commit, oxcgrt_file), oxcgrt_file)
 download.file(sprintf(owid_url, owid_commit, owid_file), owid_file)</code></pre>
-<p>Un cop descarregades les dades les obrirem amb el paquet <code>readr</code>:</p>
+<p>Un cop descarregades, obre-les amb el paquet <code>readr</code>:</p>
 <pre class="r"><code>dowid = read_csv(&quot;owid-covid-data.csv&quot;, guess_max = 50000)
 doxcgrt = read_csv(&quot;OxCGRT_latest.csv&quot;, guess_max = 50000)</code></pre>
-<p>En aquest punt, seleccionarem una data per treballar. Per tal de que cada alumne (o grup) treballi amb dates diferents, la farem dependre d’un codi d’estudiant (si sou un grup de dos, podeu posar el que preferiu):</p>
+<p>Arribats a aquest punt, seleccionaràs una data per treballar. Per tal que cada alumne (o grup) treballi amb dates diferents, la faràs dependre del teu codi d’estudiant (si sou un grup de dos, podeu posar qualsevol dels dos codis):</p>
 <pre class="r"><code>set.seed(CODI_UDG &lt;- 0000000); DAY = sample(seq(ymd(&quot;20200401&quot;), ymd(&quot;20201101&quot;), 1), 1)
 cat(sprintf(&quot;S&#39;està treballant a data %s.&quot;, format(DAY, &quot;%d/%m&quot;)))</code></pre>
 <p>S’està treballant a data 20/08.</p>
+<div id="processament-del-conjunt-de-dades-a-analitzar" class="section level2">
+<h2>Processament del conjunt de dades a analitzar</h2>
 <ol style="list-style-type: decimal">
 <li><strong>Comenta en detall cada un dels següents <em>chunks</em> utilitzats pel processament de dades:</strong></li>
 </ol>
@@ -433,12 +432,13 @@ Y_b07 = summarise(Y_b07, .groups = &#39;drop&#39;, cases_b7 = mean(new_cases, na
 <p><em>(Espai per comentar)</em></p>
 <pre class="r"><code>data = inner_join(Y, X, by = &#39;iso_code&#39;)</code></pre>
 <p><em>(Espai per comentar)</em></p>
-<div id="processament-del-conjunt-de-dades-a-analitzar" class="section level2">
-<h2>Processament del conjunt de dades a analitzar</h2>
-<p>Estem interessat en analitzar quina relació hi ha entre les decisions de govern (polítiques de tancament i contenció, i econòmiques), i com aquestes es relacionen amb la variació de casos a la població (<code>y</code>).</p>
+<p>Estem interessats a analitzar quina relació hi ha entre les decisions de govern (polítiques de tancament i contenció, i econòmiques), i com aquestes es relacionen amb la variació de casos a la població (<code>y</code>).</p>
 <ol start="2" style="list-style-type: decimal">
-<li><strong>Prepara el conjunt de dades <code>data</code> per a ser analitzat segons les característiques de les variables. Explica les decisions que prens i quina és la tipologia de les variables que tens.</strong></li>
+<li><strong>Prepara el conjunt de dades <code>data</code> per a ser analitzat segons les característiques de les variables. Explica les decisions que prens i quina és la tipologia de les variables que té el teu conjunt de dades.</strong></li>
 </ol>
+</div>
+<div id="anàlisi-del-conjunt-de-dades" class="section level2">
+<h2>Anàlisi del conjunt de dades</h2>
 <p><em>(Espai per desenvolupar)</em></p>
 <ol start="3" style="list-style-type: decimal">
 <li><strong>Escull les variables que consideris dins el teu conjunt de dades per tal de descriure de manera completa una variable numèrica, una variable categòrica i les relacions numèrica-numèrica, numèrica-categòrica i categòrica-categòrica.</strong></li>
@@ -448,8 +448,12 @@ Y_b07 = summarise(Y_b07, .groups = &#39;drop&#39;, cases_b7 = mean(new_cases, na
 <li><strong>Utilitza els contrastos vistos a classes per treure conclusions o assumpcions que es poden fer amb les tres relacions de l’apartat anterior (numèrica-numèrica, numèrica-categòrica i categòrica-categòrica).</strong></li>
 </ol>
 <p><em>(Espai per desenvolupar)</em></p>
+</div>
+<div id="model-predictiu-lineal" class="section level2">
+<h2>Model predictiu lineal</h2>
+<p>En les següents dos preguntes, intenta afegir els conceptes que has aprés a la pràctica 5.</p>
 <ol start="5" style="list-style-type: decimal">
-<li><strong>Crea un model que expliqui el creixement observat a partir de les variables que creguis adients.</strong></li>
+<li><strong>Crea un model que expliqui el creixement observat a partir de les variables que creguis adients. Descriu l’efecte que tenen les variables explicatives amb la variable resposta.</strong></li>
 </ol>
 <p><em>(Espai per desenvolupar)</em></p>
 <ol start="6" style="list-style-type: decimal">
