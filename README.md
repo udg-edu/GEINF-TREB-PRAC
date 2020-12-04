@@ -9,6 +9,7 @@ Treballaràs amb els conjunts de dades que has utilitzat al qüestionari 4 i 5. 
 
 ## Activitat
 
+A
 Tots les passes s'han d'explicar de manera que la persona que evaluï l'activitat la pugui reproduïr. Caldrà incloure tot el codi i les explicacions corresponents.
 
 1. Crea una taula que contingui informació del creixement observat entre els casos observats la setmana anterior i la següent d'una data concreta (treballa amb la data que vulguis). (Indicació: mira el procediment utilitzat al qüestionari de la pràctica 5)
