@@ -439,19 +439,19 @@ Y_b07 = summarise(Y_b07, .groups = &#39;drop&#39;, cases_b7 = mean(new_cases, na
 <ol start="2" style="list-style-type: decimal">
 <li><strong>Prepara el conjunt de dades <code>data</code> per a ser analitzat segons les característiques de les variables. Explica les decisions que prens i quina és la tipologia de les variables que tens.</strong></li>
 </ol>
-<p><em>(Espai per comentar)</em></p>
+<p><em>(Espai per desenvolupar)</em></p>
 <ol start="3" style="list-style-type: decimal">
 <li><strong>Escull les variables que consideris dins el teu conjunt de dades per tal de descriure de manera completa una variable numèrica, una variable categòrica i les relacions numèrica-numèrica, numèrica-categòrica i categòrica-categòrica.</strong></li>
 </ol>
-<p><em>(Espai per comentar)</em></p>
+<p><em>(Espai per desenvolupar)</em></p>
 <ol start="4" style="list-style-type: decimal">
 <li><strong>Utilitza els contrastos vistos a classes per treure conclusions o assumpcions que es poden fer amb les tres relacions de l’apartat anterior (numèrica-numèrica, numèrica-categòrica i categòrica-categòrica).</strong></li>
 </ol>
-<p><em>(Espai per comentar)</em></p>
+<p><em>(Espai per desenvolupar)</em></p>
 <ol start="5" style="list-style-type: decimal">
 <li><strong>Crea un model que expliqui el creixement observat a partir de les variables que creguis adients.</strong></li>
 </ol>
-<p><em>(Espai per comentar)</em></p>
+<p><em>(Espai per desenvolupar)</em></p>
 <ol start="6" style="list-style-type: decimal">
 <li><strong>Utilitza aquest model per fer una predicció de la variació esperada a data d’avui:</strong></li>
 </ol>
@@ -459,7 +459,7 @@ Y_b07 = summarise(Y_b07, .groups = &#39;drop&#39;, cases_b7 = mean(new_cases, na
   select(iso_code = CountryCode, ends_with(&quot;Index&quot;), matches(&#39;^(C|E)._&#39;), -ends_with(&#39;_Flag&#39;)) %&gt;%
   semi_join(data, by = &#39;iso_code&#39;) %&gt;%
   rename_with(~str_sub(., 1, 2), matches(&#39;^(C|E)._&#39;))</code></pre>
-<p><em>(Espai per comentar)</em></p>
+<p><em>(Espai per desenvolupar)</em></p>
 </div>
 
 
