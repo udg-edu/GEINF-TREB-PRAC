@@ -9,16 +9,17 @@ Treballaràs amb els conjunts de dades que has utilitzat al qüestionari 4 i 5. 
 
 ## Activitat
 
-A
-Tots les passes s'han d'explicar de manera que la persona que evaluï l'activitat la pugui reproduïr. Caldrà incloure tot el codi i les explicacions corresponents.
+En aquest repositori trobaràs un projecte d'RStudio amb l'enunciat del treball pràctic de l'assignatura d'Estadística. Trobaràs les fonts de l'enunciat a l'arxiu `report.Rmd`. Pots visualitzar l'enunciat processat a <https://udg-edu.github.io/GEINF-TREB-PRAC/>.
 
-1. Crea una taula que contingui informació del creixement observat entre els casos observats la setmana anterior i la següent d'una data concreta (treballa amb la data que vulguis). (Indicació: mira el procediment utilitzat al qüestionari de la pràctica 5)
-1. Afageix les accions de govern a la taula anterior.
+* Hauràs d'entregar el treball dins arxiu html utilitzant la plantilla `report.Rmd`.
+* L'entrega es farà al Moodle de l'assignatura abans del dia _19 de desembre_ (teniu temps fins al divendres 18 de desembre).
+* El treball haurà de contenir tot el codi i les explicacions corresponents.
 
-##
+## Avaluació
 
-1. Per aquest treball caldrà que tingueu disponible un perfil a [Github](ttps://github.com/). Github és un repositori de git públic. Git és un sistema de control de versions molt utilitzat pel desenvolupament de software. Utilitzarem Github perquè, a més de les funcionalitats de Git, ens permetrà publicar el nostre treball a la web, i fer-lo disponible a la resta de companys.
+* Després de la data d'entrega, s'aleatoritzaran els treballs entre els alumnes que hagin presentat el treball. 
+* Cada alumne corregirà un total de 5 treballs seguint una plantilla de correcció.
+* La teva nota final serà sobre 10, i serà la nota mediana obtinguda de les valoracions al teu treball. 
+* Si la teva correcció no ha estat justa o ha estat arbitrària, la nota teva final podrà rebre una penalització de fins a 5 punts.
 
-1. Primerament caldrà bifurcar el projecte
-Després de bifurcar el projecte amb el botó Fork, tindreu disponible
 
