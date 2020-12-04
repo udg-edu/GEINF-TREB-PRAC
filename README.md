@@ -9,7 +9,15 @@ Treballaràs amb els conjunts de dades que has utilitzat al qüestionari 4 i 5. 
 
 ## Activitat
 
-Tots les passes s'han d'explicar de manera que la persona que evaluï l'activitat la pugui reproduïr.
+Tots les passes s'han d'explicar de manera que la persona que evaluï l'activitat la pugui reproduïr. Caldrà incloure tot el codi i les explicacions corresponents.
 
 1. Crea una taula que contingui informació del creixement observat entre els casos observats la setmana anterior i la següent d'una data concreta (treballa amb la data que vulguis). (Indicació: mira el procediment utilitzat al qüestionari de la pràctica 5)
 1. Afageix les accions de govern a la taula anterior.
+
+##
+
+1. Per aquest treball caldrà que tingueu disponible un perfil a [Github](ttps://github.com/). Github és un repositori de git públic. Git és un sistema de control de versions molt utilitzat pel desenvolupament de software. Utilitzarem Github perquè, a més de les funcionalitats de Git, ens permetrà publicar el nostre treball a la web, i fer-lo disponible a la resta de companys.
+
+1. Primerament caldrà bifurcar el projecte
+Després de bifurcar el projecte amb el botó Fork, tindreu disponible
+
