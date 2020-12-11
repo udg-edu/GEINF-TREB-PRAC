@@ -41,7 +41,7 @@ set.seed(CODI_UDG <- 0000000); DAY = sample(seq(ymd("20200401"), ymd("20201101")
 cat(sprintf("S'està treballant a data %s.", format(DAY, "%d/%m")))
 ```
 
-## Processament del conjunt de dades a analitzar (pregunta 1)
+## Processament del conjunt de dades a analitzar (pregunta 1 i 2)
 
 1. **Comenta en detall cada un dels següents *chunks* utilitzats pel processament de dades:**
 
@@ -106,7 +106,7 @@ Tenint això en compte, contesta les preguntes següents finals final del trebal
 
 2. **Prepara el conjunt de dades `data` per a ser analitzat segons les característiques de les variables. Explica les decisions que prens i quina és la tipologia de les variables que té el teu conjunt de dades.**
 
-## Anàlisi del conjunt de dades (preguntes 2 i 3)
+## Anàlisi del conjunt de dades (preguntes 3 i 4)
 
 *(Espai per desenvolupar)*
 
@@ -118,7 +118,7 @@ Tenint això en compte, contesta les preguntes següents finals final del trebal
 
 *(Espai per desenvolupar)*
 
-## Model predictiu lineal (preguntes 4 i 5)
+## Model predictiu lineal (preguntes 5 i 6)
 
 En les següents dues preguntes, intenta afegir els conceptes que has après a la pràctica 5.
 
@@ -126,7 +126,7 @@ En les següents dues preguntes, intenta afegir els conceptes que has après a l
 
 *(Espai per desenvolupar)*
 
-6. **Utilitza aquest model per fer una predicció mitjana amb interval de confiança de la variable `y` al dia 15 de novembre, disposant únicament de les variables del conjunt `doxgrt`.**
+6. **Utilitza aquest model per fer una predicció mitjana amb interval de confiança de la variable `y` al dia 15 de novembre, disposant únicament de les variables del conjunt `doxcgrt`.**
 
 ```{r}
 data_pred = filter(doxcgrt, is.na(RegionName), ymd(Date) == ymd("20201115")) %>%

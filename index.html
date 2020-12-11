@@ -413,9 +413,9 @@ summary {
 
 <div id="TOC">
 <ul>
-<li><a href="#processament-del-conjunt-de-dades-a-analitzar-pregunta-1">Processament del conjunt de dades a analitzar (pregunta 1)</a></li>
-<li><a href="#anàlisi-del-conjunt-de-dades-preguntes-2-i-3">Anàlisi del conjunt de dades (preguntes 2 i 3)</a></li>
-<li><a href="#model-predictiu-lineal-preguntes-4-i-5">Model predictiu lineal (preguntes 4 i 5)</a></li>
+<li><a href="#processament-del-conjunt-de-dades-a-analitzar-pregunta-1-i-2">Processament del conjunt de dades a analitzar (pregunta 1 i 2)</a></li>
+<li><a href="#anàlisi-del-conjunt-de-dades-preguntes-3-i-4">Anàlisi del conjunt de dades (preguntes 3 i 4)</a></li>
+<li><a href="#model-predictiu-lineal-preguntes-5-i-6">Model predictiu lineal (preguntes 5 i 6)</a></li>
 </ul>
 </div>
 
@@ -437,8 +437,8 @@ doxcgrt = read_csv(&quot;OxCGRT_latest.csv&quot;, guess_max = 50000)</code></pre
 <pre class="r"><code>set.seed(CODI_UDG &lt;- 0000000); DAY = sample(seq(ymd(&quot;20200401&quot;), ymd(&quot;20201101&quot;), 1), 1)
 cat(sprintf(&quot;S&#39;està treballant a data %s.&quot;, format(DAY, &quot;%d/%m&quot;)))</code></pre>
 <p>S’està treballant a data 20/08.</p>
-<div id="processament-del-conjunt-de-dades-a-analitzar-pregunta-1" class="section level2">
-<h2>Processament del conjunt de dades a analitzar (pregunta 1)</h2>
+<div id="processament-del-conjunt-de-dades-a-analitzar-pregunta-1-i-2" class="section level2">
+<h2>Processament del conjunt de dades a analitzar (pregunta 1 i 2)</h2>
 <ol style="list-style-type: decimal">
 <li><strong>Comenta en detall cada un dels següents <em>chunks</em> utilitzats pel processament de dades:</strong></li>
 </ol>
@@ -471,8 +471,8 @@ Y_b07 = summarise(Y_b07, .groups = &#39;drop&#39;, cases_b7 = mean(new_cases, na
 <li><strong>Prepara el conjunt de dades <code>data</code> per a ser analitzat segons les característiques de les variables. Explica les decisions que prens i quina és la tipologia de les variables que té el teu conjunt de dades.</strong></li>
 </ol>
 </div>
-<div id="anàlisi-del-conjunt-de-dades-preguntes-2-i-3" class="section level2">
-<h2>Anàlisi del conjunt de dades (preguntes 2 i 3)</h2>
+<div id="anàlisi-del-conjunt-de-dades-preguntes-3-i-4" class="section level2">
+<h2>Anàlisi del conjunt de dades (preguntes 3 i 4)</h2>
 <p><em>(Espai per desenvolupar)</em></p>
 <ol start="3" style="list-style-type: decimal">
 <li><strong>Escull les variables que consideris dins el teu conjunt de dades per tal de descriure de manera completa una variable numèrica, una variable categòrica i les relacions numèrica-numèrica, numèrica-categòrica i categòrica-categòrica.</strong></li>
@@ -483,15 +483,15 @@ Y_b07 = summarise(Y_b07, .groups = &#39;drop&#39;, cases_b7 = mean(new_cases, na
 </ol>
 <p><em>(Espai per desenvolupar)</em></p>
 </div>
-<div id="model-predictiu-lineal-preguntes-4-i-5" class="section level2">
-<h2>Model predictiu lineal (preguntes 4 i 5)</h2>
+<div id="model-predictiu-lineal-preguntes-5-i-6" class="section level2">
+<h2>Model predictiu lineal (preguntes 5 i 6)</h2>
 <p>En les següents dues preguntes, intenta afegir els conceptes que has après a la pràctica 5.</p>
 <ol start="5" style="list-style-type: decimal">
 <li><strong>Crea un model de regressió lineal que expliqui la variable <code>y</code> a partir de les variables d’acció de govern o altres variables derivades d’aquestes. Tria el model de manera que sigui òptim segons algun criteri vist a classe. Per aquest model, descriu l’efecte que tenen les variables explicatives amb la variable resposta i mira si es compleixen les assumpcions bàsiques.</strong></li>
 </ol>
 <p><em>(Espai per desenvolupar)</em></p>
 <ol start="6" style="list-style-type: decimal">
-<li><strong>Utilitza aquest model per fer una predicció mitjana amb interval de confiança de la variable <code>y</code> al dia 15 de novembre, disposant únicament de les variables del conjunt <code>doxgrt</code>.</strong></li>
+<li><strong>Utilitza aquest model per fer una predicció mitjana amb interval de confiança de la variable <code>y</code> al dia 15 de novembre, disposant únicament de les variables del conjunt <code>doxcgrt</code>.</strong></li>
 </ol>
 <pre class="r"><code>data_pred = filter(doxcgrt, is.na(RegionName), ymd(Date) == ymd(&quot;20201115&quot;)) %&gt;%
   select(iso_code = CountryCode, ends_with(&quot;Index&quot;), matches(&#39;^(C|E)._&#39;), -ends_with(&#39;_Flag&#39;)) %&gt;%
