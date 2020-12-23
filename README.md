@@ -24,4 +24,5 @@ En aquest repositori trobaràs un projecte d'RStudio amb l'enunciat del treball 
 * La teva nota final serà sobre 10, i serà la nota mediana obtinguda de les valoracions al teu treball. 
 * Si la teva correcció no ha estat justa o ha estat arbitrària, la nota teva final podrà rebre una penalització de fins a 5 punts.
 
+Trobareu informació més detallada dels criteris de correcció a la rúbrica del treball pràctic: [rubric.md](https://github.com/udg-edu/GEINF-TREB-PRAC/blob/main/rubric.md).
 
