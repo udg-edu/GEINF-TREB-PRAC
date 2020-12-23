@@ -1,6 +1,5 @@
----
-title: "Rúbrica de correcció pel treball pràctic d'estadística"
----
+Rúbrica de correcció pel treball pràctic d'estadística"
+===========
 
 **1. Comenta en detall cada un dels següents *chunks* utilitzats pel processament de dades:**
 
