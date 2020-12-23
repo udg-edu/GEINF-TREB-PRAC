@@ -1,5 +1,5 @@
-Rúbrica de correcció pel treball pràctic d'estadística"
-===========
+# Rúbrica de correcció pel treball pràctic d'estadística
+
 
 **1. Comenta en detall cada un dels següents *chunks* utilitzats pel processament de dades:**
 
@@ -18,11 +18,11 @@ Cal que la suma dels següents valors sigui 8.
   
 **3. Escull les variables que consideris dins el teu conjunt de dades per tal de descriure de manera completa una variable numèrica, una variable categòrica i les relacions numèrica-numèrica, numèrica-categòrica i categòrica-categòrica.**
 
-  * S'ha analitzat una variable numèrica?
-  * S'ha analitzat una variable categòrica?
-  * S'ha analitzat la relació de dues variables categòriques?
-  * S'ha analitzat la relació de dues variables numèriques?
-  * S'ha analitzat la relació d'una variable numèrica i una categòrica?
+  * S'ha descrit de manera completa una variable numèrica?
+  * S'ha descrit de manera completa una variable categòrica?
+  * S'ha descrit de manera completa la relació de dues variables categòriques?
+  * S'ha descrit de manera completa la relació de dues variables numèriques?
+  * S'ha descrit de manera completa la relació d'una variable numèrica i una categòrica?
   
 **4. Utilitza els contrastos vistos a classes per treure conclusions o assumpcions que es poden fer amb les tres relacions de l'apartat anterior (numèrica-numèrica, numèrica-categòrica i categòrica-categòrica). Per cada un dels contrastos, específica les hipòtesis inicial i alternativa, quin és l'estadístic de contrast, el valor p i la decisió final envers les hipòtesis plantejades.**
 
