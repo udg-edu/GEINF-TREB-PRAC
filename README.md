@@ -12,7 +12,7 @@ Treballaràs amb els conjunts de dades que has utilitzat al qüestionari 4 i 5. 
 En aquest repositori trobaràs un projecte d'RStudio amb l'enunciat del treball pràctic de l'assignatura d'Estadística. Trobaràs les fonts de l'enunciat a l'arxiu `report.Rmd`. Pots visualitzar l'enunciat processat a <https://udg-edu.github.io/GEINF-TREB-PRAC/>.
 
 * Hauràs d'entregar el treball dins un arxiu html utilitzant la plantilla `report.Rmd`.
-* L'entrega es farà al Moodle de l'assignatura abans del dia _21 de desembre_ (teniu temps fins al diumenge 20 de desembre).
+* L'entrega es farà al Moodle de l'assignatura abans del dia _29 de desembre_ (teniu temps fins al diumenge 28 de desembre).
 * El treball haurà de contenir tot el codi i les explicacions corresponents.
 
 ## Avaluació
@@ -24,4 +24,5 @@ En aquest repositori trobaràs un projecte d'RStudio amb l'enunciat del treball 
 * La teva nota final serà sobre 10, i serà la nota mediana obtinguda de les valoracions al teu treball. 
 * Si la teva correcció no ha estat justa o ha estat arbitrària, la nota teva final podrà rebre una penalització de fins a 5 punts.
 
+Trobareu informació més detallada dels criteris de correcció a la rúbrica del treball pràctic: [rubric.md](https://github.com/udg-edu/GEINF-TREB-PRAC/blob/main/rubric.md).
 
