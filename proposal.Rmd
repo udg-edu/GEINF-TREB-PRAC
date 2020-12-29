@@ -1,0 +1,517 @@
+---
+title: "Treball pràctic d'estadística"
+subtitle: Proposta de solució
+output:
+  html_document: 
+    highlight: textmate
+    css: style.css
+    toc: yes
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(lubridate)
+knitr::opts_chunk$set(echo = TRUE, comment = "#>")
+options(width = 120)
+```
+
+Primerament descarrega les dades de les dues webs anteriors:
+
+```{r, eval=FALSE}
+oxcgrt_commit = "dd81c18f5576d78aa0e5543f0d91ccd5c9849ba0"
+oxcgrt_file = "OxCGRT_latest.csv"
+oxcgrt_url = "https://raw.githubusercontent.com/OxCGRT/covid-policy-tracker/%s/data/%s"
+
+owid_commit = "0282b4583d2a981392f152c60690fa2142f92459"
+owid_file = "owid-covid-data.csv"
+owid_url = "https://raw.githubusercontent.com/owid/covid-19-data/%s/public/data/%s"
+
+download.file(sprintf(oxcgrt_url, oxcgrt_commit, oxcgrt_file), oxcgrt_file)
+download.file(sprintf(owid_url, owid_commit, owid_file), owid_file)
+```
+
+Un cop descarregades, obre-les amb el paquet `readr`:
+
+```{r, message=FALSE}
+dowid = read_csv("owid-covid-data.csv", guess_max = 50000)
+doxcgrt = read_csv("OxCGRT_latest.csv", guess_max = 50000)
+```
+
+Arribats a aquest punt, seleccionaràs una data per treballar. Per tal que cada alumne (o grup) treballi amb dates diferents, la faràs dependre del teu codi d'estudiant (si sou un grup de dos, podeu posar qualsevol dels dos codis):
+
+```{r, results='asis'}
+set.seed(CODI_UDG <- 0000000); DAY = sample(seq(ymd("20200401"), ymd("20201101"), 1), 1)
+cat(sprintf("S'està treballant a data %s.", format(DAY, "%d/%m")))
+```
+
+## Processament del conjunt de dades a analitzar (pregunta 1 i 2)
+
+### Pregunta 1
+
+**Comenta en detall cada un dels següents *chunks* utilitzats pel processament de dades:**
+
+::: {.resposta}
+
+```{r}
+Y_b07 = filter(dowid, DAY - days(7) < date, date <= DAY)
+```
+
+Es filtren tots els registres de la taula `dowid` posteriors a 7 dies anteriors de la data `r DAY` i que no siguin posteriors a aquesta data. Aquests registres s'assignen a la taula `Y_b07`.
+
+```{r}
+Y_b07 = group_by(Y_b07, iso_code, country = location)
+Y_b07 = summarise(Y_b07, .groups = 'drop', cases_b7 = mean(new_cases, na.rm = TRUE))
+```
+
+Primer s'agrupa la taula `Y_b07` per la variable `iso_code` i `location`, a més s'aprofita per canviar el nom d'aquesta darrera variable a `country`.
+Després, es crea un resum segons l'agrupació anterior (país) de la mitjana dels nous casos observats (`new_cases`). S'aprofita per eliminar l'agrupació feta en la primera instrucció.
+El resultat es guarda a la variable `Y_b07`.
+
+```{r}
+Y_b07 = filter(Y_b07, cases_b7 > 0)
+```
+
+Es filtren els països que hagin tingut algun cas durant la darrera setmana.
+
+```{r}
+Y_f07 = dowid %>%
+  filter(DAY < date, date <= DAY + days(7)) %>%
+  group_by(iso_code) %>%
+  summarise(.groups = 'drop', cases_f7 = mean(new_cases, na.rm = TRUE)) %>%
+  filter(cases_f7 > 0)
+```
+
+Es repeteix els passos anteriors, però filtrant els registres posteriors a la data `r DAY` arribant a 7 dies posteriors a aquesta data. Els resultats es guarden a la taula `Y_f07`. En aquest cas, en l'agrupació únicament s'ha utilitzat la variable `iso_code`.
+
+```{r}
+Y = inner_join(Y_b07, Y_f07, by = "iso_code") %>%
+  mutate(y = log(cases_f7/cases_b7))
+```
+
+Es combinen les taules `Y_b07` i `Y_f07` mitjançant un "inner join" de la variable `iso_code` (únicament es guarden els registres que apareguin a les dues taules). A la taula es crea una nova variable anomenada `y` que conté el logaritme del quocient entre la mitjana dels casos de la setmana següent (`cases_f7`) i la mitjana dels casos de la setmana anterior (`cases_b7`). El resultat s'assigna a la taula `Y`.
+
+```{r}
+temp = filter(doxcgrt, is.na(RegionName), ymd(Date) == DAY)
+```
+
+Es filtren els registres de `doccgrt` que tinguin valors perduts a la variable `RegionName` i que siguin del dia `r DAY`. El resultat s'assigna a `temp`.
+
+```{r}
+X = select(temp, iso_code = CountryCode, ends_with("Index"), matches('^(C|E)._'), -ends_with('_Flag')) %>%
+  rename_with(~str_sub(., 1, 2), matches('^(C|E)._'))
+```
+
+Se seleccionen les columnes `CountryCode`, les columnes que acabin amb la cadena "Index", les columnes que compleixin el patró '^(C|E)._' "començar (^) amb C o E (C|E), un caràcter qualsevol (.), seguit d'un guió baix (_). No s'agafen les columnes que acabin amb la cadena "_Flag". De la taula resultant es modifica el nom de totes les columnes que comencin amb el patró '^(C|E)._' mantinguen únicament els dos primers caràcters. El resultat s'assigna a X.
+
+```{r}
+data = inner_join(Y, X, by = 'iso_code')
+```
+
+Es combinen les taules Y i X a través de la variable `iso_code`. Únicament es mantenen els registres en què la clau coincideixi.
+:::
+
+Estem interessats a analitzar quina relació hi ha entre les decisions de govern (polítiques de tancament i contenció, i econòmiques), i com aquestes es relacionen amb la variació de casos a la població (`y`).
+
+Tenint això en compte, contesta les preguntes següents finals final del treball.
+
+### Pregunta 2
+
+**Prepara el conjunt de dades `data` per a ser analitzat segons les característiques de les variables. Explica les decisions que prens i quina és la tipologia de les variables que té el teu conjunt de dades.**
+
+::: {.resposta}
+Per a poder treballar de manera adequada amb el conjunt de dades `data`, necessitem preparar les variables per a ser analitzades segons les seves característiques.
+
+* Primer convertirem les variables C i E 
+
+```{r}
+summary(select(data, matches("^(C|E).$")))
+```
+
+que siguin categòriques a tipus `factor` d'R. Si consultem el [llibre de variables](https://github.com/OxCGRT/covid-policy-tracker/blob/master/documentation/codebook.md) veurem que hem de convertir a factor les variables C1, C2, C3, C4, C5, C6, C7, C8, E1 i E2:
+
+```{r}
+data = mutate(data,
+              C1 = factor(C1),
+              C2 = factor(C2),
+              C3 = factor(C3),
+              C4 = factor(C4),
+              C5 = factor(C5),
+              C6 = factor(C6),
+              C7 = factor(C7),
+              C8 = factor(C8),
+              E1 = factor(E1),
+              E2 = factor(E2))
+```
+
+D'aquesta manera, R les tractarà com a variables categòriques:
+
+```{r}
+summary(select(data, matches("^(C|E).$")))
+```
+
+* Eliminarem aquelles observacions que continguin valors perduts.
+
+```{r}
+data = na.omit(data)
+```
+
+:::
+
+## Anàlisi del conjunt de dades (preguntes 3 i 4)
+
+### Pregunta 3 {.tabset}
+
+**Escull les variables que consideris dins el teu conjunt de dades per tal de descriure de manera completa una variable numèrica, una variable categòrica i les relacions numèrica-numèrica, numèrica-categòrica i categòrica-categòrica.**
+
+#### Numèrica
+
+::: {.resposta}
+Treballarem amb la variable _Stringency Index_.
+
+Resumirem la variable numèrica amb els estadístics bàsics:
+
+```{r}
+summarise_ = function(.data, x){
+  summarise(.data,
+            n = n(),
+            na = sum(is.na({{x}})),
+            mean_ = mean({{x}}, na.rm = TRUE),
+            sd_ = sd({{x}}, na.rm = TRUE),
+            cv = sd({{x}}, na.rm = TRUE) / mean({{x}}, na.rm = TRUE),
+            min_ = min({{x}}, na.rm = TRUE),
+            q1_ = quantile({{x}}, 0.25, na.rm = TRUE),
+            median_ = median({{x}}, na.rm = TRUE),
+            q3_ = quantile({{x}}, 0.75, na.rm = TRUE),
+            max_ = max({{x}}, na.rm = TRUE),
+            riq = IQR({{x}}, na.rm = TRUE) )
+}
+summarise_(data, StringencyIndex)
+```
+
+La variable `StringencyIndex` té 160 ovservacions. Com que hem eliminat els valors perduts, veiem que no tenim valors perduts. La variable pren valors en el rang 11.1 fins a 97.2 amb el 50% central de dades entre els valors 43.5 i 76. La mitjana observada és de 58.6. Essent la mediana de 60.2, lleugerament superior a la mitjana, significa que la distribució de la variable té un lleuger biaix a l'esquerra.
+Podem visualitzar la distribució de la variable amb una caixa de dispersió:
+
+```{r, fig.width=6.8, fig.height=4.5, fig.align='center'}
+with(data, boxplot(StringencyIndex, horizontal = TRUE, 
+                   main = 'Index de severitat de les mesures aplicades'))
+```
+
+En el gràfic es veu millor el lleuger biaix a l'esquerra i els límits comentats abans.
+:::
+
+#### Categòrica
+
+::: {.resposta}
+Treballarem amb la variable _C1_.
+
+ La variable `C1` conté informació de les mesures de contingència preses a les escoles i universitats. La variable conté 4 categories: 0 - cap mesura, 1 - es recomana tancar o obrir amb algunes alteracions, 2 - es requereix tancar alguns centres, 3 - es requereix tancar tots els centres educatius. Per facilitar la interpretació afegirem etiquetes a la variable categòrica:
+
+```{r}
+tmp = mutate(data,
+             C1_label = factor(C1, labels = c("Cap mesura", "Recomenació tancament", 
+                                              "Requeriment alguns tancaments", "Tancament total")))
+tmp = count(tmp, C1_label)
+mutate(tmp, `%` = prop.table(n) * 100)
+```
+
+Com veiem, la majoria de països estan aplicant un tancament total (C1: 4) als centres educatius. Essent doncs la moda de la distribució d'aquesta variable. Concretament, el 41.9% estan aplicant aquesta mesura. Aquesta mesura ve seguida, amb un 35% de països que l'apliquen, de requerir tancar algun centre (C1: 3). 
+
+```{r, fig.width=11, fig.height=4.5}
+with(tmp, barplot(n, names.arg = C1_label))
+```
+
+:::
+
+#### Numèrica vs Numèrica
+ 
+::: {.resposta}
+
+Treballarem amb les variables _StringencyIndex_ i _EconomicSupportIndex_.
+
+A nivell univariat podem descriure les dues variables per separat:
+
+```{r}
+list(
+  StringencyIndex = summarise_(data, StringencyIndex),
+  EconomicSupportIndex = summarise_(data, EconomicSupportIndex)
+) %>%
+  bind_rows(.id = 'Variable')
+```
+
+Per descriure la relació bivariada descriure la correlació:
+
+```{r}
+summarise(data, r = cor(StringencyIndex, EconomicSupportIndex) )
+```
+
+Com veiem, les dues mesures estan molt poc correlacionades. Podríem dir que incorrelacionades. Amb un gràfic es pot veure millor aquesta incorrelació
+
+```{r, fig.width=6, fig.height=5, fig.align='center'}
+with(data, {
+  plot(StringencyIndex, EconomicSupportIndex)
+  abline(lm(EconomicSupportIndex~StringencyIndex), col = 'red')
+})
+```
+:::
+
+#### Categòrica vs Categòrica
+
+::: {.resposta}
+Treballarem amb les variables _C1_ vs _E1_.
+
+Per analitzar la relació entre les variables categòriques C1 (mesures a les escoles) i E1 (mesures de cobrir els ingressos dels treballadors), crearem una taula temporal `tmp2` que contindrà etiquetes de cadascuna de les categories.
+
+Aprofitarem aquesta nova taula per crear la taula de contingència entre aquestes dues variables:
+
+```{r}
+tmp2 = mutate(data,
+             C1_label = factor(C1, labels = c("Cap mesura", "Recomenació tancament", 
+                                              "Requeriment alguns tancaments", "Tancament total")),
+             E1_label = factor(E1, labels = c("No hi ha ajudes", "Menys del 50% del salari", "50% o més del salari")))
+tab = with(tmp2, table(C1_label, E1_label))
+tab
+```
+
+Com veiem, la situació més comuna a data `r DAY` és cobrir menys del 50% del salari i mantenir un tancament total als centres educatius.
+
+```{r}
+round(addmargins(100 * prop.table(tab)), 2)
+```
+
+Aquesta situació representa un 42.5% del total d'escenaris possibles.
+
+```{r}
+round(addmargins(100 * prop.table(tab, 1))[-5,], 2)
+```
+
+Si ens fixem dins les categories de tancament de centres educatius i analitzem les possibilitats d'ajuda als ingressos dels treballadors, veiem que les distribucions marginals varien. Per exemple, dins dels països que mantenen un tancament total a les escoles, veiem que la majoria d'ells cobreixen menys d'un 50% del salari (59.7%). En canvi, els països que requereixen algun tancament, tenen un comportament bastant uniforme en les mesures d'ajuda als treballadors (37.5%, 35,71%, 26.79%), essent l'acció de no donar cap ajuda la més freqüent (37.5%). Finalment, notar que per mesures menys restrictives als centres educatius els països tendeixen a cobrir el 50% o més del salari (46.67% quan no hi ha cap mesura envers els centres educatius i 59.09% quan únicament hi ha la recomanació).
+
+```{r}
+round(addmargins(ptab <- 100 * prop.table(tab, 2))[,-4], 2)
+```
+
+Les conclusions anteriors es poden interpretar també en funció de les accions d'ajuda als treballadors. Dins dels països que no donen cap ajuda als seus treballadors, abunden més aquells que requereixen algun tancament a algun centre (46.67%). Dins dels que no cobreixen la meitat del salari trobem que els que més abunden són els que tenen un tancament total. Finalment, els països que cobreixen el 50% o més del salari, són aquells que tenen unes mesures més suaus, repartint-se de manera bastant uniforme en totes les mesures (14.9%, 27.7%, 31.9%, 25.5%).
+
+Aquesta darrera relació la podríem visualitza amb un gràfic de barres
+
+```{r, fig.width=6.6, fig.height=5, fig.align=TRUE}
+lattice::barchart(t(ptab), auto.key = TRUE)
+```
+
+On es veu més clarament que en els països que cobreixen el 50% o més del salari tendeixen més a tenir els centres oberts (color blau) o amb alguna recomanació (color lila).
+
+:::
+
+#### Numèrica vs Categòrica
+
+::: {.resposta}
+Treballarem amb les variables _StringencyIndex_ i _E1_.
+
+Per descriure la relació entre les ajudes econòmiques als ingressos dels treballadors (E1) i l'índex de severitat de les mesures descriurem els estadístics bàsics en cada una de les categories:
+
+```{r}
+summarise_(group_by(tmp2, E1_label), StringencyIndex)
+```
+
+Com veiem, l'índex de severitat és lleugerament inferior en els països en què es retorna el 50% o més de salari als treballadors afectats. Mentre que en els països que es retorna menys del 50% veiem com l'índex de severitat de les mesures és superior. Això podria ser degut al fet que els països que han sofert més la pandèmia (països amb mesures més severes) tinguin menys recursos per cobrir el 100% del salari dels treballadors afectats (perquè hi ha més treballadors afectats, i també menys recursos).
+
+Aquesta relació la podem visualitzar amb un gràfic de caixa múltiple:
+
+```{r, fig.width=8, fig.height=5, fig.align='center'}
+boxplot(StringencyIndex~E1_label, data=tmp2)
+```
+:::
+
+### Pregunta 4 {.tabset}
+
+**Utilitza els contrastos vistos a classes per treure conclusions o assumpcions que es poden fer amb les tres relacions de l'apartat anterior (numèrica-numèrica, numèrica-categòrica i categòrica-categòrica). Per cada un dels contrastos, específica les hipòtesis inicial i alternativa, quin és l'estadístic de contrast, el valor p i la decisió final envers les hipòtesis plantejades.**
+
+#### Numèrica vs Numèrica 
+
+::: {.resposta}
+Seguirem amb les variables: _StringencyIndex_ vs _EconomicSupportIndex_.
+
+Donades les variables $X$: índex de severitat de les mesures de restricció i $Y$: índex de suport econòmic, estem interessats a veure si podem assumir la hipòtesis nul·la $H_0: \rho_{X,Y} = 0$, o sigui, que la correlació entre les dues variables és zero. Per fer-ho realitzarem el contrast de correlació de Pearson.
+
+```{r}
+with(data, cor.test(StringencyIndex, EconomicSupportIndex))
+```
+
+Com veiem, la correlació observada és molt baixa (r=-0.00859) i amb la mida mostral actual i el nivell de significació $\alpha=0.05$, no ens permet rebutjar la hipòtesis nul·la plantejada (p=0.9141).
+
+Amb la mida mostral que tenim (n=160) sembla plausible que es pugui assumir que la distribució conjunta de les dues mitjanes sigui normal.
+
+:::
+
+#### Categòrica vs Categòrica
+
+::: {.resposta}
+
+Seguirem amb les variables _C1_ i _E1_.
+
+Anem a veure si podem assumir les dues variables independents, veiem si podem assumir la hipòtesi nul·la:
+
+H_0:$ C1 i E1 són independents.
+
+Com hem vist en la descriptiva anterior, sembla raonable que no es complirà aquesta hipòtesi (les distribucions marginals d'una variable eren bastant diferents dins de les categories de l'altre variable). Realitzarem un contrast Khi-quadrat d'independència.
+
+```{r}
+chisq.test(tab, correct = FALSE)
+```
+
+Com veiem, tenim evidències per rebutjar $H_0$, i per tant, tenim evidències pensar que les dues variables __no__ són independents (p=0.0005684).
+
+Com que algunes cel·les tenen unes freqüències baixes (més petites de 5), podríem tenir algun problema en el càlcul. Però després de veure la descriptiva anterior, sembla bastant plausible rebutjar la hipòtesis nul·la plantejada.
+
+:::
+
+#### Numèrica vs Categòrica
+
+::: {.resposta}
+
+Seguirem amb les variables _StringencyIndex_ i _E1_.
+
+Per veure si existeixen diferència entre el nivell mitjà de la variable `StringencyIndex` entre les categories de la variable `E1`, plantejarem un contrast ANOVA amb la hipòtesi nul·la $H_0: \mu_{\{\text{E1}=1\}} = \mu_{\{\text{E1}=2\}} = \mu_{\{\text{E1}=3\}}$ envers la hipòtesi que alguna mitjana és diferent de la resta. Per això farem el test ANOVA.
+
+```{r}
+m = aov(StringencyIndex~E1, data)
+summary(m)
+```
+
+En aquest cas, sembla que tenim motius per rebutjar la hipòtesi nul·la. Veiem si els supòsits dels models lineals es compleixen.
+
+* Normalitat
+
+```{r}
+shapiro.test(residuals(m))
+```
+
+Sembla que el supòsit de normalitat no és plausible.
+
+* Homoscedasticitat.
+
+Com que no podem assumir normalitat, utilitzarem el contrast de Breusch-Pagan.
+
+```{r}
+lmtest::bptest(m)
+```
+
+Les dades rebutgen la hipòtesi nul·la, per tant, en aquest cas tampoc podem assumir homoscedasticitat.
+
+:::
+
+
+## Model predictiu lineal (preguntes 5 i 6)
+
+En les següents dues preguntes, intenta afegir els conceptes que has après a la pràctica 5.
+
+### Pregunta 5
+
+**Crea un model de regressió lineal que expliqui la variable `y` a partir de les variables d'acció de govern o altres variables derivades d'aquestes. Tria el model de manera que sigui òptim segons algun criteri vist a classe. Per aquest model, descriu l'efecte que tenen les variables explicatives amb la variable resposta i mira si es compleixen les assumpcions bàsiques.**
+
+::: {.resposta}
+
+Treballarem amb les mesures de govern independentment
+
+```{r}
+m0 = lm(y~1, data=data)
+m1 = step(m0, scope = ~StringencyIndex+StringencyLegacyIndex+GovernmentResponseIndex+
+            ContainmentHealthIndex+EconomicSupportIndex+
+            C1+C2+C3+C4+C5+C6+C7+C8+
+            E1+E2+E3+
+            I(C1==1)+I(C2==1)+I(C3==1)+I(C4==1)+I(C5==1)+I(C6==1)+I(C7==1)+I(C8==1)+
+            I(E1==1)+I(E2==1)+I(E3>0), k = 2, direction = 'both', trace = 0)
+```
+
+Seguint el criteri AIC, arribem al model que conté la variable C8 i les variables C2 i C4 dicotomitzades com "s'ha aplicat alguna mesura" vs "no s'ha aplicat cap mesura":
+
+```{r}
+summary(m1)
+```
+
+Anem a veure si es compleixen els supòsits bàsics dels models lineals:
+
+* __Homoscedasticitat dels residus__
+
+Realitzem el contrast de Breusch-Pagan.
+
+```{r}
+lmtest::bptest(m1)
+```
+
+Podem veure com podem assumir l'homoscedasticitat dels residus.
+
+* __Normalitat dels residus__
+
+Anem a realitza el contrast de Shapiro-Wilk.
+
+```{r}
+shapiro.test(residuals(m1))
+```
+
+La normalitat no sembla que es compleixi. Veiem com és la distribució dels residus en comparació a una normal.
+
+```{r}
+z = residuals(m1)
+hist(z, breaks = 20, probability = TRUE, main = 'Comparació de la distribució dels residus')
+x = seq(-2,2, length.out = 100)
+xnorm = dnorm(x, mean(z), sd(z))
+points(x, xnorm, type = 'l', col = 'red')
+```
+
+Com veiem, els residus semblen tenir un major pes al voltant de la mitjana. En aquest cas, sembla que els nostres error tenen menys variació que la normal. Per tant, quan fem prediccions esperaríem més observacions dins l'interval que construïm del que s'hauria d'esperar sota el supòsit de normalitat.
+
+:::
+
+### Pregunta 6
+
+**Utilitza aquest model per fer una predicció mitjana amb interval de confiança de la variable `y` al dia 15 de novembre, disposant únicament de les variables del conjunt `doxcgrt`.**
+
+```{r}
+data_pred = filter(doxcgrt, is.na(RegionName), ymd(Date) == ymd("20201115")) %>%
+  select(iso_code = CountryCode, ends_with("Index"), matches('^(C|E)._'), -ends_with('_Flag')) %>%
+  semi_join(data, by = 'iso_code') %>%
+  rename_with(~str_sub(., 1, 2), matches('^(C|E)._'))
+```
+
+::: {.resposta}
+
+Per fer la predicció, primerament aplicarem les conversions necessàries perquè el conjunt `data_pred` estigui en el mateix format que les dades que s'han utilitzat per ajustat el model
+
+```{r}
+data_pred_2 = data_pred %>%
+  filter(C8 != 0, C4 != 0, C2 != 0)
+data_pred_2 = mutate(data_pred_2,
+              C1 = factor(C1),
+              C2 = factor(C2),
+              C3 = factor(C3),
+              C4 = factor(C4),
+              C5 = factor(C5),
+              C6 = factor(C6),
+              C7 = factor(C7),
+              C8 = factor(C8),
+              E1 = factor(E1),
+              E2 = factor(E2))
+```
+
+Un cop hem arreglat el conjunt de dades, podem calcular els intervals de confiança amb la funció `predict()` amb paràmetres `interval = 'confidence'`. Ordenarem i agruparem segons el valor predit.
+
+```{r}
+m1_predict = predict(m1, newdata = data_pred_2, interval = 'confidence')
+```
+
+```{r}
+tibble(iso_code = pull(data_pred_2, iso_code),
+       y_pred = m1_predict[,'fit'],
+       y_pred_lo = m1_predict[,'lwr'],
+       y_pred_hi = m1_predict[,'upr']) %>%
+  group_by(y_pred, y_pred_lo, y_pred_hi) %>%
+  summarise(.groups = 'drop', iso_code = str_c(iso_code, collapse=', ')) %>%
+  arrange(y_pred) %>%
+  select(iso_code, y_pred, y_pred_lo, y_pred_hi) %>%
+  knitr::kable(digits = 3)
+```
+
+Amb les accions de govern actuals, les majors baixades serien pels països: BEN, BIH, DJI, GHA, GIN, GTM, KEN, LSO, NAM, SLV. Les majors pujades serien pels països: AND, COG, ECU, GAB, HND, IRL, JOR, LBN, LTU, LVA, MOZ, MWI, PHL, PNG, PSE, RUS, RWA, SUR, SVK, SVN, UKR.
+
+:::
