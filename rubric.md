@@ -7,7 +7,7 @@
   * Quantes instruccions falta algun detall per explicar?
   * Quantes instruccions no s'ha explicat gens o malament?
 
-Cal que la suma dels següents valors sigui 8.
+Cal que la suma sigui 8, que eren el nombre de chunks a comentar.
 
 **2. Prepara el conjunt de dades `data` per a ser analitzat segons les característiques de les variables. Explica les decisions que prens i quina és la tipologia de les variables que té el teu conjunt de dades.**
 
