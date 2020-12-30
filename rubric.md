@@ -2,6 +2,8 @@
 
 El formulari a emplenar el trobareu a: <https://docs.google.com/forms/d/e/1FAIpQLSfQteObAQyE3HlFyQDFHDVYE_DZrlFk2VQ9e5P-9lnN2ZSWrA/viewform?usp=sf_link>
 
+Aquest formulari es basa en la rúbrica de correcció que es va compartir durant l'elaboració del treball.
+
 **1. Comenta en detall cada un dels següents *chunks* utilitzats pel processament de dades:**
 
   * Quantes de les 8 instruccions a explicar s'han explicat correctament?
