@@ -1,0 +1,27 @@
+---
+title: "Avaluació activitat"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+### Correcció treballs
+
+Pots fer les correccions a l'adreça [link](https://docs.google.com/forms/d/e/1FAIpQLSfQteObAQyE3HlFyQDFHDVYE_DZrlFk2VQ9e5P-9lnN2ZSWrA/viewform?usp=sf_link)
+
+```{r}
+url = "https://moodle2.udg.edu/pluginfile.php/1444949/mod_folder/content/0/%s.html"
+info %>% 
+  pivot_longer(matches('treb'), values_to = 'codi') %>%
+  mutate(
+    url = sprintf(url, codi),
+    link = text_spec("Descarrega l'activitat", color = 'blue',
+                     link = url)
+  ) %>%
+  select(Codi = codi, `Enllaç` = link) %>%
+  kable(escape = F) %>%
+  kable_styling(bootstrap_options = "striped", full_width = F, position = "left")
+```
+
