@@ -3,3 +3,10 @@
 .RData
 .Ruserdata
 report.html
+*.json
+*.csv
+*.xlsx
+*.RData
+*.zip
+*.html
+*.pdf
